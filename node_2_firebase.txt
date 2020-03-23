@@ -1,0 +1,44 @@
+<!-- #include <ESP8266WiFi.h>
+#include <SoftwareSerial.h>
+#include <FirebaseArduino.h>
+
+#define WIFI_SSID  "Krane"
+#define WIFI_PASSWORD "iphone0034"
+
+#define FIREBASE_HOST "ecg-project-75dd0.firebaseio.com"
+#define FIREBASE_AUTH "mBb5roJHBkzOMwGGZXWOXekBSQVyTluXG2vNX4VH"
+
+SoftwareSerial NodeSerial(D2, D3); // RX | TX
+void setup() {
+  pinMode(D2, INPUT);
+  pinMode(D3, OUTPUT);
+  Serial.begin(115200);
+  NodeSerial.begin(4800);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  while(WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(500);
+  }
+  Serial.println();
+  Serial.print("connected: ");
+  Serial.println(WiFi.localIP());
+  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+}
+
+void loop() {
+  NodeSerial.print(0xA0);
+  NodeSerial.print("\n");
+  while (NodeSerial.available() > 0) {
+    float val = NodeSerial.parseFloat();
+    if (NodeSerial.read() == '\n') {
+      Serial.println(val);
+    }
+    Firebase.pushFloat("value", val);
+    if(Firebase.failed()){
+      Serial.print("pushing value failed: ");
+      Serial.println(Firebase.error());
+      return;
+    }
+  }
+  delay(100);
+} -->
